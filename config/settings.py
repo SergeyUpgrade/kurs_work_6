@@ -41,10 +41,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
- #   "main",
-  #  "mailing",
-  #  "users",
-  #  "blog",
+    "main",
+    "mailing",
+    "users",
+    "blog",
 ]
 
 MIDDLEWARE = [
@@ -125,40 +125,40 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-#STATIC_URL = 'static/'
-#STATICFILES_DIRS = (BASE_DIR / 'static',)
+STATIC_URL = 'static/'
+STATICFILES_DIRS = (BASE_DIR / 'static',)
 
-#APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
-#APSCHEDULER_RUN_NOW_TIMEOUT = 25
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT = 25
 
-#MEDIA_URL = "/media/"
-#MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-#AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "users.User"
 
-#LOGIN_REDIRECT_URL = "/"
-#LOGOUT_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+#Default primary key field type
+#https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-#DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-#EMAIL_HOST = os.getenv("EMAIL_HOST")
-#EMAIL_PORT = os.getenv("EMAIL_PORT")
-#EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-#EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-#EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", False) == "True"
-#EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", False) == "True"
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", False) == "True"
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", False) == "True"
 
-#SERVER_EMAIL = EMAIL_HOST_USER
-#DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-#CACHE_ENABLED = True
-#if CACHE_ENABLED:
-#    CACHES = {
- #       "default": {
- #           "BACKEND": "django.core.cache.backends.redis.RedisCache",
- #           "LOCATION": os.getenv("LOCATION")
- #       }
- #   }
+CACHE_ENABLED = True
+if CACHE_ENABLED:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": os.getenv("LOCATION")
+        }
+    }
