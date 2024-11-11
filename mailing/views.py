@@ -3,7 +3,13 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+)
 
 from mailing.forms import ClientForm, MessageForm, MailingForm, MailingManagerForm
 from mailing.models import Client, Message, Mailing, MailingAttempt
@@ -12,6 +18,7 @@ from mailing.services import get_cached_articles
 
 class MainPage(View):
     """Выводит статистику"""
+
     def get(self, request, *args, **kwargs):
         total_mailings = Mailing.objects.count()
         active_mailings = Mailing.objects.filter(status="started").count()
@@ -137,7 +144,10 @@ class MailingListView(ListView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            if self.request.user.is_superuser or self.request.user.groups.filter(name='managers').exists():
+            if (
+                self.request.user.is_superuser
+                or self.request.user.groups.filter(name="managers").exists()
+            ):
                 # Если пользователь администратор или менеджер, показать все рассылки
                 return Mailing.objects.all()
             else:

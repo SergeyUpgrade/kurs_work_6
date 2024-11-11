@@ -1,5 +1,7 @@
 from django.contrib import admin
 from mailing.models import Client, Mailing, Message, MailingAttempt
+
+
 # Register your models here.
 @admin.register(Client)
 class ProductAdmin(admin.ModelAdmin):

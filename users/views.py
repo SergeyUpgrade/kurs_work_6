@@ -26,19 +26,19 @@ class UserCreateView(CreateView):
     success_url = reverse_lazy("users:login")
 
     def form_valid(self, form):
-        """Метод для отправки ссылки на почту, для её подтверждения """
+        """Метод для отправки ссылки на почту, для её подтверждения"""
         user = form.save()
         user.is_active = False
         token = secrets.token_hex(16)
         user.token = token
         user.save()
         host = self.request.get_host()
-        url = f'http://{host}/users/email-confirm/{token}/'
+        url = f"http://{host}/users/email-confirm/{token}/"
         send_mail(
             subject="Подтверждение почты",
             message=f"Привет, перейди по ссылке для подтверждения почты {url}",
             from_email=EMAIL_HOST_USER,
-            recipient_list=[user.email]
+            recipient_list=[user.email],
         )
         return super().form_valid(form)
 
@@ -57,7 +57,7 @@ def generate_random_password(length=8):
 
     # Определяем возможные символы для пароля
     characters = string.ascii_letters + string.digits + string.punctuation
-    password = ''  # Создаем пустую строку для пароля
+    password = ""  # Создаем пустую строку для пароля
     # Генерируем пароль
     for i in range(length):
         random_char = random.choice(characters)  # Выбираем случайный символ
@@ -69,12 +69,16 @@ def generate_random_password(length=8):
 def reset_password(request):
     # ф-ция восстановления, пароля зарегистрированного пользователя
 
-    if request.method == 'POST':  # Мы проверяем, является ли метод запроса POST.
-        email = request.POST.get('email')  # извлекаем email из запроса
+    if request.method == "POST":  # Мы проверяем, является ли метод запроса POST.
+        email = request.POST.get("email")  # извлекаем email из запроса
 
         try:
-            user = User.objects.get(email=email)  # пытаемся получить пользователя по email
-            new_password = generate_random_password()  # Генерация нового пароля через ф-цию
+            user = User.objects.get(
+                email=email
+            )  # пытаемся получить пользователя по email
+            new_password = (
+                generate_random_password()
+            )  # Генерация нового пароля через ф-цию
             user.password = make_password(new_password)  # Хеширование пароля
             user.save()
 
@@ -87,13 +91,17 @@ def reset_password(request):
                 fail_silently=False,
             )
             # Перенаправление на страницу входа после успешного восстановления
-            return redirect('users:login')
+            return redirect("users:login")
 
         # Обработка случая, когда пользователь не найден
         except User.DoesNotExist:
-            return render(request, 'users/password_reset.html', {'error': 'Пользователь с таким email не найден.'})
+            return render(
+                request,
+                "users/password_reset.html",
+                {"error": "Пользователь с таким email не найден."},
+            )
     # Если метод запроса не POST, а GET мы просто отображаем форму для восстановления пароля.
-    return render(request, 'users/password_reset.html')
+    return render(request, "users/password_reset.html")
 
 
 class UserUpdateView(UpdateView):

@@ -10,7 +10,7 @@ def get_cached_articles():
 
     # Проверяем, включен ли кэш.
     if CACHE_ENABLED:
-        key = 'index_random_articles'
+        key = "index_random_articles"
         # Задаем ключ для кэша, который будет использоваться для хранения случайных статей.
 
         articles = cache.get(key)
