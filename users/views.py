@@ -73,12 +73,8 @@ def reset_password(request):
         email = request.POST.get("email")  # извлекаем email из запроса
 
         try:
-            user = User.objects.get(
-                email=email
-            )  # пытаемся получить пользователя по email
-            new_password = (
-                generate_random_password()
-            )  # Генерация нового пароля через ф-цию
+            user = User.objects.get(email=email)  # пытаемся получить пользователя по email
+            new_password = generate_random_password()  # Генерация нового пароля через ф-цию
             user.password = make_password(new_password)  # Хеширование пароля
             user.save()
 
@@ -95,11 +91,7 @@ def reset_password(request):
 
         # Обработка случая, когда пользователь не найден
         except User.DoesNotExist:
-            return render(
-                request,
-                "users/password_reset.html",
-                {"error": "Пользователь с таким email не найден."},
-            )
+            return render(request,"users/password_reset.html",{"error": "Пользователь с таким email не найден."})
     # Если метод запроса не POST, а GET мы просто отображаем форму для восстановления пароля.
     return render(request, "users/password_reset.html")
 

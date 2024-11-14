@@ -51,7 +51,7 @@ class Mailing(models.Model):
 
     description = models.CharField(verbose_name="описание", max_length=255, **NULLABLE)
     start_time = models.DateTimeField(
-        auto_now=True, verbose_name="дата начала рассылки"
+         verbose_name="дата начала рассылки"
     )
     periodicity = models.CharField(
         verbose_name="периодичность", max_length=10, choices=PERIODICITY_CHOICES
@@ -87,7 +87,7 @@ class MailingAttempt(models.Model):
     mailing = models.ForeignKey(
         Mailing, on_delete=models.CASCADE, verbose_name="Рассылка"
     )
-    send_time = models.DateTimeField(auto_now=True, verbose_name="Время отправки")
+    send_time = models.DateTimeField(auto_now_add=True, verbose_name="Время отправки")
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
     server_response = models.TextField(
         verbose_name="Ответ почтового сервера", **NULLABLE

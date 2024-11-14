@@ -1,6 +1,17 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
+    {% if user.is_authenticated %}
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <a href="{% url 'mailing:client_create' %}" class="btn btn-success">Создать клиента</a>
+            </div>
+        </div>
+        {% else %}
+        <h5>Что бы увидеть список своих клиентов, зайдите на свой аккаунт</h5>
+
+        <li><a href="{% url 'users:login' %}" class="text-black">Войти</a></li>
+    {% endif %}
     <h1>Клиенты</h1>
     <div class="table-responsive">
         <table class="table table-striped">
@@ -13,29 +24,29 @@
             </thead>
             <tbody>
             {% for client in clients %}
+            {% if client.owner == user or user.is_superuser %}
                 <tr>
                     <td>{{ client.full_name }}</td>
                     <td>{{ client.email }}</td>
                     <td>
-                        <a href="{% url 'mailing:client_detail' client.pk %}"
-                           class="btn btn-info btn-sm">Просмотреть</a>
+                        {% if perms.mailing.can_deactivate_mailing or user.is_superuser or client.owner != user %}
                         <a href="{% url 'mailing:client_update' client.pk %}"
                            class="btn btn-warning btn-sm">Изменить</a>
+                        {% endif %}
+                        {% if mailing.owner == user or user.is_superuser %}
                         <a href="{% url 'mailing:client_delete' client.pk %}" class="btn btn-danger btn-sm">Удалить</a>
+                        {% endif %}
                     </td>
                 </tr>
+            {% endif %}
             {% endfor %}
             </tbody>
         </table>
     </div>
 <div class="row justify-content-center">
     <div class="col-6">
-        {% if user.is_authenticated %}
-                {% if user.is_superuser or not perms.mailing.can_deactivate_mailing %}
-                    <a href="{% url 'mailing:client_create' %}" class="btn btn-success">Добавить клиента</a>
-                {% endif %}
-        {% endif %}
-        <a href="{% url 'main:index' %}" class="btn btn-primary">На главную</a>
+
+        <a href="{% url 'mailing:main_page' %}" class="btn btn-primary">На главную</a>
     </div>
 </div>
 {% endblock %}

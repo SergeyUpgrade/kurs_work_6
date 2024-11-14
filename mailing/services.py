@@ -10,7 +10,7 @@ def get_cached_articles():
 
     # Проверяем, включен ли кэш.
     if CACHE_ENABLED:
-        key = "index_random_articles"
+        key = 'index_random_articles'
         # Задаем ключ для кэша, который будет использоваться для хранения случайных статей.
 
         articles = cache.get(key)
@@ -19,8 +19,8 @@ def get_cached_articles():
         if articles is None:
             # Если статьи не найдены в кэше (articles равен None), выполняем следующий блок кода.
 
-            articles = Blog.objects.filter(is_published=True)
-            # Получаем все опубликованные статьи из модели Blog.
+            articles = Blog.objects.all()
+            # Получаем все статьи из модели Blog.
 
             if articles.exists():
                 # Проверяем, существуют ли полученные статьи.
@@ -34,9 +34,8 @@ def get_cached_articles():
     else:
         # Если кэш не включен, выполняем следующий блок кода.
 
-        articles = Blog.objects.filter(is_published=True)
+        articles = Blog.objects.all()
         if articles.exists():
             articles = random.sample(list(articles), min(3, articles.count()))
 
     return articles
-    # Возвращаем выбранные статьи (из кэша или из базы данных).

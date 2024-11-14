@@ -1,6 +1,18 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
+    {% if user.is_authenticated %}
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <a href="{% url 'mailing:client_create' %}" class="btn btn-success">Создать сообщение</a>
+                <a href="{% url 'main:index' %}" class="btn btn-primary">Назад</a>
+            </div>
+        </div>
+        {% else %}
+        <h5>Что бы увидеть список своих сообщений, зайдите на свой аккаунт</h5>
+
+        <li><a href="{% url 'users:login' %}" class="text-black">Войти</a></li>
+    {% endif %}
     <h1>Список сообщений</h1>
     <div class="table-responsive">
         <table class="table table-striped">
@@ -13,13 +25,14 @@
             </thead>
             <tbody>
             {% for message in messages %}
+            {% if message.owner == user or user.is_superuser or perms.mailing.can_deactivate_mailing %}
                 <tr>
                     <td>{{ message.subject }}</td>
                     <td>{{ message.body }}</td>
                     <td>
                         <a href="{% url 'mailing:message_detail' message.pk %}"
                            class="btn btn-info btn-sm">Просмотреть</a>
-                        {% if user.is_authenticated %}
+                        {% if user.is_superuser or message.owner == user %}
                             <a href="{% url 'mailing:message_update' message.pk %}"
                                class="btn btn-warning btn-sm">Изменить</a>
                             <a href="{% url 'mailing:message_delete' message.pk %}"
@@ -27,14 +40,9 @@
                         {% endif %}
                     </td>
                 </tr>
+            {% endif %}
             {% endfor %}
             </tbody>
         </table>
-    </div>
-    <div class="row justify-content-center">
-        <div class="col-6">
-            <a href="{% url 'mailing:message_create' %}" class="btn btn-success">Создать сообщение</a>
-            <a href="{% url 'main:index' %}" class="btn btn-primary">Назад</a>
-        </div>
     </div>
 {% endblock %}
