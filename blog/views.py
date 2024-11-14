@@ -1,11 +1,5 @@
 from blog.models import Blog
-from django.views.generic import (
-    ListView,
-    DeleteView,
-    UpdateView,
-    CreateView,
-    DetailView,
-)
+from django.views.generic import ListView, DeleteView, UpdateView, CreateView, DetailView
 from django.urls import reverse_lazy, reverse
 from blog.forms import BlogForm
 from pytils.translit import slugify

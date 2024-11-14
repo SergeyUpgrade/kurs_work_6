@@ -1,4 +1,5 @@
 from django.forms import BooleanField, ModelForm
+from django import forms
 
 from mailing.models import Client, Message, Mailing
 
@@ -11,6 +12,8 @@ class StyleFormMixin:
                 field.widget.attrs["class"] = "form-check-input"
             else:
                 field.widget.attrs["class"] = "form-control"
+            if isinstance(field.widget, forms.widgets.DateTimeInput):
+                field.widget.input_type = 'datetime-local'
 
 
 class ClientForm(StyleFormMixin, ModelForm):

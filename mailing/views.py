@@ -2,23 +2,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
-from django.views import View
-from django.views.generic import (
-    ListView,
-    DetailView,
-    CreateView,
-    UpdateView,
-    DeleteView,
-)
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 
 from mailing.forms import ClientForm, MessageForm, MailingForm, MailingManagerForm
 from mailing.models import Client, Message, Mailing, MailingAttempt
 from mailing.services import get_cached_articles
 
 
-class MainPage(View):
+class MainPage(TemplateView):
     """Выводит статистику"""
-
     def get(self, request, *args, **kwargs):
         total_mailings = Mailing.objects.count()
         active_mailings = Mailing.objects.filter(status="started").count()
@@ -79,12 +71,23 @@ class ClientUpdateView(UpdateView):
     form_class = ClientForm
     success_url = reverse_lazy("mailing:client_list")
 
+    def get_form_class(self):
+        user = self.request.user
+        if user == self.object.owner:
+            return ClientForm
+        raise PermissionDenied
+
 
 class ClientDeleteView(DeleteView):
     model = Client
     template_name = "mailing/client_confirm_delete.html"
     success_url = reverse_lazy("mailing:client_list")
 
+    def get_form_class(self):
+        user = self.request.user
+        if user == self.object.owner:
+            return ClientForm
+        raise PermissionDenied
 
 # CRUD для сообщений
 class MessageListView(ListView):
@@ -94,15 +97,12 @@ class MessageListView(ListView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            if self.request.user.is_superuser:
+            if self.request.user.is_superuser or self.request.user.has_perm("mailing.can_deactivate_mailing"):
                 # Если пользователь администратор, показать все сообщения
                 return Message.objects.all()
             else:
                 # Иначе показать сообщения, связанных с текущим пользователем
                 return Message.objects.filter(owner=self.request.user)
-        else:
-            # Если пользователь не аутентифицирован, показать все сообщения
-            return Message.objects.all()
 
 
 class MessageDetailView(DetailView):
@@ -146,7 +146,7 @@ class MailingListView(ListView):
         if self.request.user.is_authenticated:
             if (
                 self.request.user.is_superuser
-                or self.request.user.groups.filter(name="managers").exists()
+                or self.request.user.has_perm("mailing.can_deactivate_mailing")
             ):
                 # Если пользователь администратор или менеджер, показать все рассылки
                 return Mailing.objects.all()
@@ -204,6 +204,11 @@ class MailingDeleteView(DeleteView):
     template_name = "mailing/mailing_confirm_delete.html"
     success_url = reverse_lazy("mailing:mailing_list")
 
+    def get_form_class(self):
+        user = self.request.user
+        if user == self.object.owner:
+            return MailingForm
+        raise PermissionDenied
 
 class MailingAttemptListView(LoginRequiredMixin, ListView):
     model = MailingAttempt
@@ -220,3 +225,4 @@ class MailingAttemptListView(LoginRequiredMixin, ListView):
         context["mailing"] = get_object_or_404(Mailing, pk=mailing_id)
         context["mailing_id"] = mailing_id
         return context
+

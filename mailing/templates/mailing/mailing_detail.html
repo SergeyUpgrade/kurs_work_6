@@ -14,7 +14,8 @@
                             <p class="card-text">Дата завершения рассылки: {{ object.actual_end_time }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
-                                    <a class="btn btn-primary" href="{% url 'mailing:mailing_list' %}"
+                                    <a href="{% url 'mailing:mailing_attempt_list' mailing.pk %}" type="button" class="btn  btn-info my-2">История рассылки</a>
+                                    <a type="button" class="btn btn-primary my-2" href="{% url 'mailing:mailing_list' %}"
                                        role="button">Назад</a>
                                 </div>
                             </div>

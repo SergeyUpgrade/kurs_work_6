@@ -9,25 +9,27 @@ from mailing.models import MailingAttempt, Mailing
 
 def mailing_attempt(mailing):
     """Отправляет письма клиентам и записывает результат."""
-    try:
-        # Отправляем письмо и получаем ответ сервера
-        response = send_mail(
-            subject=mailing.message.subject,
-            message=mailing.message.body,
-            from_email=EMAIL_HOST_USER,
-            recipient_list=[client.email for client in mailing.clients.all()],
-            fail_silently=False,
-        )
-        # Создаем отчет о рассылке с успешным статусом и ответом сервера
-        MailingAttempt.objects.create(
-            mailing=mailing, status="success", server_response=response  # Ответ сервера
-        )
-    except Exception as e:
-        # Неудачная попытка
-        MailingAttempt.objects.create(
-            mailing=mailing, status="failed", server_response=str(e)
-        )
-        print(f"Ошибка при отправке рассылки: {e}")  # Выводим ошибку в консоль
+    if mailing.start_time <= datetime.now(pytz.timezone(TIME_ZONE)):
+
+        try:
+            # Отправляем письмо и получаем ответ сервера
+            response = send_mail(
+                subject=mailing.message.subject,
+                message=mailing.message.body,
+                from_email=EMAIL_HOST_USER,
+                recipient_list=[client.email for client in mailing.clients.all()],
+                fail_silently=False,
+            )
+            # Создаем отчет о рассылке с успешным статусом и ответом сервера
+            MailingAttempt.objects.create(
+                mailing=mailing, status="success", server_response=response  # Ответ сервера
+            )
+        except Exception as e:
+            # Неудачная попытка
+            MailingAttempt.objects.create(
+                mailing=mailing, status="failed", server_response=str(e)
+            )
+            print(f"Ошибка при отправке рассылки: {e}")  # Выводим ошибку в консоль
 
 
 def check_and_send_mailing():
@@ -46,10 +48,11 @@ def check_and_send_mailing():
 def process_mailing_status(mailing):
     """Обрабатывает статус рассылки."""
     if mailing.status == "created":
-        mailing_attempt(mailing)
-        mailing.status = "started"
-        mailing.save()
-        print("Рассылка начата.")
+        if mailing.start_time <= datetime.now(pytz.timezone(TIME_ZONE)):
+            mailing_attempt(mailing)
+            mailing.status = "started"
+            mailing.save()
+            print("Рассылка начата.")
     elif mailing.status == "started":
         handle_started_mailing(mailing)
 
@@ -91,5 +94,3 @@ def check_periodicity_and_send(mailing, now, last_send_time):
     elif mailing.periodicity == "daily" and days_since_last_send >= 1:
         mailing_attempt(mailing)
         print("Выполнена ежедневная рассылка.")
-    else:
-        print("Ничего не отправлено.")
